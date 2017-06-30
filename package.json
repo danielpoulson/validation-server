@@ -1,0 +1,65 @@
+{
+  "name": "changecontrol",
+  "version": "1.0.0",
+  "description": "Change Control Program Infrasture",
+  "scripts": {
+    "start": "nf start -p 3010",
+    "start:prod": "NODE_ENV=production node server/server.js",
+    "build:folder": "npm-run-all --parallel copy:*",
+    "build:prod": "npm-run-all delete:dist build:client build:folder",
+    "build:client": "npm run build --prefix client",
+    "delete:dist": "del ./dist",
+    "dev:babel": "babel server -d dist/server -watch",
+    "dev:nodemon": "NODE_ENV=development nodemon server/server.js --watch server",
+    "serve:dev": "npm-run-all --parallel dev:*",
+    "copy:client": "cpy '**/*.*' ../../dist --cwd=client/build --parents",
+    "copy:packjson": "cpy 'package.json' dist",
+    "copy:variables": "cpy 'variables.env' dist",
+    "copy:views": "cpy server/views/* !server/views/index.pug dist/server/views/",
+    "copy:server": "cpy '**/*.js' '../dist/server' --cwd=server --parents",
+    "copy:pug": "cpy 'views/index.pug' '../dist' --cwd=server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielpoulson/changecontrol.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danielpoulson/changecontrol/issues"
+  },
+  "homepage": "https://github.com/danielpoulson/changecontrol#readme",
+  "dependencies": {
+    "body-parser": "^1.16.1",
+    "cookie-parser": "^1.4.3",
+    "crypto": "^0.0.3",
+    "del": "^2.2.2",
+    "dotenv": "^4.0.0",
+    "ejs": "^2.5.6",
+    "es6-promisify": "^5.0.0",
+    "express": "^4.14.1",
+    "express-csv": "^0.6.0",
+    "express-session": "^1.15.1",
+    "foreman": "^2.0.0",
+    "json2csv": "^3.7.3",
+    "lodash": "^4.17.4",
+    "moment": "^2.17.1",
+    "mongoose": "^4.8.4",
+    "mongoose-to-csv": "^0.1.1",
+    "morgan": "^1.8.1",
+    "multer": "^1.3.0",
+    "nodemailer": "^2.3.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "pug": "^2.0.0-rc.1",
+    "redux-thunk": "^2.2.0",
+    "xoauth2": "^1.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "eslint": "^3.19.0",
+    "eslint-plugin-react": "^7.0.0"
+  }
+}

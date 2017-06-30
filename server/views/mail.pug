@@ -1,0 +1,43 @@
+extends email-layout
+
+block content
+  h2 Change Control NPI System
+  h3 You have been assigned ownership of this #{emailType}
+  if changeAss
+    h3 Change Control #{changeNo} - #{changeAss}
+  else
+    p #{action}
+    h3 Assosiated Change Control #{changeNo}
+  p Target date : #{target}
+  div(style='margin: 5px 0px 2px 25px')
+  h3(style='color:blue') What does this mean (You have been assigned a Change Control)?
+  p
+    i
+      | Being assigned a change control means that you have been tasked as the responsible person to oversee the implementation of this change.
+  p(style='margin: 5px 0px 2px 25px') 1. The change has been assigned long or short
+  p(style='margin: 5px 0px 2px 25px') 2. If required stage A and B of the QF208 form has been completed.
+  p(style='margin: 5px 0px 2px 25px') 3. All required actions has been assigned and completed.
+  p(style='margin: 5px 0px 2px 25px') 4. The change control has been approved.
+  p(style='margin: 5px 0px 30px 25px') 5. At the completion of the change all actions are closed out.
+  h3(style='color:blue') What does this mean (You have been assigned a task )?
+  p
+    i
+      | Being assigned a task mean that you have been tasked as the responsible person to oversee the completion of the designated task. To complete the task you must ensure that the following is complete
+  p(style='margin: 5px 0px 2px 25px') 1. Undertake the activity assigned in the task in the allotted time period.
+  p(style='margin: 5px 0px 2px 25px')
+    | 2. Attach any documentation, printout or reports as necessary to the change control as evidence of the task completion.
+  p(style='margin: 5px 0px 2px 25px')
+    | 3. Provide a summary of the task if required either attached to the change control or in the comment section. In this section you should prior releveant information, observations or conclusions.
+  p(style='margin: 5px 0px 2px 25px') 4. Enter additional comments to provide clarity of the task or findings.
+  p(style='margin: 5px 0px 2px 25px') 5. On completion of the task
+  p(style='margin: 5px 0px 2px 50px') a. Change the status to task complete
+  p(style='margin: 5px 0px 30px 50px')
+    | b. Notify the person responsible for the change control that the task is completed
+  p
+    em Q. I am not sure what to do?
+    br
+    |         A. If you are unsure on what to do next please contact QA or Daniel Poulson.
+  p
+    em Q. What if I have been assigned this change control or task in error?
+    br
+    |         A. If you have been assigned this task in error please contact QA or Daniel Poulson

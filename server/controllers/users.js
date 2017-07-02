@@ -72,15 +72,15 @@ exports.getLoggedUser = function(req, res) {
 };
 
 exports.getUser = function(req, res) {
-    const _fullname = req.params.id;
+  const _fullname = req.params.id;
 
-    User
-        .find({})
-        .select({"passwordHash": 0})
-        .where({fullname : _fullname})
-        .exec(function(err, collection) {
-          res.send(collection);
-    });
+  const user = User
+      .find({})
+      .select({"passwordHash": 0})
+      .where({fullname : _fullname})
+
+  user.then(task => res.send(task[0]));
+
 };
 
 exports.getFullname = function(username) {

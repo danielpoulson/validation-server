@@ -3,33 +3,18 @@
   "version": "1.0.0",
   "description": "Change Control Program Infrasture",
   "scripts": {
-    "start": "nf start -p 3010",
+    "start": "yarn run dev:nodemon",
     "start:prod": "NODE_ENV=production node server/server.js",
-    "build:folder": "npm-run-all --parallel copy:*",
-    "build:prod": "npm-run-all delete:dist build:client build:folder",
-    "build:client": "npm run build --prefix client",
-    "delete:dist": "del ./dist",
-    "dev:babel": "babel server -d dist/server -watch",
-    "dev:nodemon": "NODE_ENV=development nodemon server/server.js --watch server",
-    "serve:dev": "npm-run-all --parallel dev:*",
-    "copy:client": "cpy '**/*.*' ../../dist --cwd=client/build --parents",
-    "copy:packjson": "cpy 'package.json' dist",
-    "copy:variables": "cpy 'variables.env' dist",
-    "copy:views": "cpy server/views/* !server/views/index.pug dist/server/views/",
-    "copy:server": "cpy '**/*.js' '../dist/server' --cwd=server --parents",
-    "copy:pug": "cpy 'views/index.pug' '../dist' --cwd=server"
+    "dev:nodemon": "NODE_ENV=development nodemon server/server.js --watch server"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danielpoulson/changecontrol.git"
+    "url": "git+https://github.com/danielpoulson/changecontrol-server.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/danielpoulson/changecontrol/issues"
-  },
-  "homepage": "https://github.com/danielpoulson/changecontrol#readme",
+
   "dependencies": {
     "body-parser": "^1.16.1",
     "cookie-parser": "^1.4.3",

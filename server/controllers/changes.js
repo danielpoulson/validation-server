@@ -42,7 +42,7 @@ exports.createChange = function(req, res, next) {
                 return res.send({reason:err.toString()});
             }
             res.status(200).send(_changes);
-            
+
             const user = users.getUserEmail(_changes.CC_Champ);
 
             user.then(user => {
@@ -88,18 +88,33 @@ exports.updateChange = function(req, res) {
   });
 };
 
-exports.updateChangeComment = function(req, res) {
-  const _log = req.body;
+// exports.updateChangeComment_old = function(req, res) {
+//   const _log = req.body;
 
-  const _update = {'CC_Id' : "4", 'CC_ActDept': req.body.CC_ActDept , 'CC_ActBy': req.body.CC_ActBy,
+//   const _update = {'CC_Id' : "4", 'CC_ActDept': req.body.CC_ActDept , 'CC_ActBy': req.body.CC_ActBy,
+//               'CC_ActDate': req.body.CC_ActDate, 'CC_Action' : req.body.CC_Action};
+
+//   req.body._id = Math.floor(Math.random() * (9999999 - 1)) + 1;
+
+//    Change.update({CC_No : req.params.id}, {$push: {CC_LOG : _update}}, (err, data) => {
+//      if (err) return handleError(err);
+//      res.send(_log);
+//    });
+// };
+
+exports.updateChangeComment = function(req, res) {
+  const ccID = req.body.CC_Id || 4;
+
+  const _update = {'CC_Id' : ccID, 'CC_ActDept': req.body.CC_ActDept , 'CC_ActBy': req.body.CC_ActBy,
               'CC_ActDate': req.body.CC_ActDate, 'CC_Action' : req.body.CC_Action};
 
-  req.body._id = Math.floor(Math.random() * (9999999 - 1)) + 1;
+  // req.body._id = Math.floor(Math.random() * (9999999 - 1)) + 1;
 
-   Change.update({CC_No : req.params.id}, {$push: {CC_LOG : _update}}, (err, data) => {
-     if (err) return handleError(err);
-     res.send(_log);
-   });
+  const change = Change.update({CC_No : req.params.id}, {$addToSet: {CC_LOG : _update}}, {new : true});
+
+   change.then(res.sendStatus(200));
+   change.catch(err => handleError(err));
+
 };
 
 exports.getChangeById = function(req, res) {

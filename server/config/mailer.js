@@ -21,19 +21,23 @@ const generateHTML = (options) => {
   return html;
 };
 
-// CC_TDate, CC_No, CC_Descpt, CC_Champ
 exports.send = (options) => {
-
-  const html = generateHTML(options);
-
-  const mailOptions = {
-    from: 'Daniel Poulson <daniel.poulson@fmc.com>',
-    to: options.toEmail,
-    subject: options.subject,
-    html,
-    text: 'This will be filled in later'
-  };
-
-  const sendMail = promisify(transport.sendMail, transport);
-  return sendMail(mailOptions).catch(err => console.log(err));
+  console.log(options);
 }
+
+// CC_TDate, CC_No, CC_Descpt, CC_Champ
+// exports.send = (options) => {
+
+//   const html = generateHTML(options);
+
+//   const mailOptions = {
+//     from: 'Daniel Poulson <daniel.poulson@fmc.com>',
+//     to: options.toEmail,
+//     subject: options.subject,
+//     html,
+//     text: 'This will be filled in later'
+//   };
+
+//   const sendMail = promisify(transport.sendMail, transport);
+//   return sendMail(mailOptions).catch(err => console.log(err));
+// }

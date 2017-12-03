@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Change Control Program Infrasture",
   "scripts": {
-    "start": "yarn run dev:nodemon",
+    "start": "npm run dev:nodemon",
     "start:prod": "NODE_ENV=production node server/server.js",
-    "dev:nodemon": "NODE_ENV=development nodemon server/server.js --watch server"
+    "dev:nodemon": "nodemon server/server.js --watch server"
   },
   "repository": {
     "type": "git",
@@ -14,7 +14,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-
   "dependencies": {
     "body-parser": "^1.16.1",
     "cookie-parser": "^1.4.3",

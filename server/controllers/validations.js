@@ -15,7 +15,7 @@ exports.createValidation = function(req, res, next) {
       console.log(e); // "oh, no!"
     })
     .then(count => {
-      const newNum = 'VAL-' + (parseInt(count) + 200);
+      const newNum = 'VAL-' + (parseInt(count) + 201);
       val.val_no = newNum;
 
       const validation = new Validation(val);

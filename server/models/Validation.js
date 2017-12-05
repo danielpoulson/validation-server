@@ -10,7 +10,7 @@ const validationSchema = new Schema({
   val_title: { type: String, required: '{PATH} is required!' },
   val_dept: { type: String, required: '{PATH} is required!' },
   val_site: { type: String, required: '{PATH} is required!' },
-  val_risk: { type: String, required: '{PATH} is required!' },
+  val_risk: { type: String },
   val_reval: { type: Date },
   created: { type: Date, default: Date.now },
   val_stat: { type: Number, required: '{PATH} is required!' },

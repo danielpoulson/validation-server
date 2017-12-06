@@ -12,7 +12,7 @@ const projectSchema = new Schema({
   pj_link: { type: String }, // linking to other project or type
   pj_champ: { type: String, required: '{PATH} is required!' },
   pj_cust: { type: String, required: '{PATH} is required!' },
-  pj_pry: { type: String, required: '{PATH} is required!' },
+  pj_pry: { type: String },
   pj_target: { type: Date, required: '{PATH} is required!' },
   pj_closed: { type: Date },
   created: { type: Date, default: Date.now },

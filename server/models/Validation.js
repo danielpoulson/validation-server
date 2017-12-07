@@ -25,6 +25,17 @@ const validationSchema = new Schema({
       val_actdept: String
     }
   ],
+  val_vms: [
+    {
+      val_vms_seq: Number,
+      val_vms_title: String,
+      val_vms_comp: Date,
+      val_vms_reval: Date,
+      val_vms_rev: Number,
+      val_vms_cycle: Number,
+      val_vms_stage: String
+    }
+  ],
   val_active: Boolean
 });
 

@@ -33,7 +33,7 @@ const validationSchema = new Schema({
       val_vms_reval: Date,
       val_vms_rev: Number,
       val_vms_cycle: Number,
-      val_vms_stage: String
+      val_vms_stage: Number
     }
   ],
   val_active: Boolean

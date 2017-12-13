@@ -54,11 +54,11 @@ exports.uploadFile = function (req, res) {
     const myRe = config.regex;
     const myArray = myRe.exec(docName);
 
-
+//Remove the prefix "PM" and the file extension for the full document name
     if(myArray) {
-        fileData.fsFileName = docName.split('.').shift().substr(11);
+        fileData.fsFileName = docName.replace(/(.*)\.(.*?)$/, "$1").substr(11);
     } else {
-        fileData.fsFileName = docName.split('.').shift();
+        fileData.fsFileName = docName.replace(/(.*)\.(.*?)$/, "$1");
     }
 
     fileData.fsAddedAt = new Date();

@@ -1,12 +1,12 @@
 const express = require("express");
 const path = require("path");
-const config = require("./config/config");
-require("./config/auth");
-const mongoose = require("./config/mongoose");
-const expressfile = require("./config/express");
+const config = require("./server/config/config");
+require("./server/config/auth");
+const mongoose = require("./server/config/mongoose");
+const expressfile = require("./server/config/express");
 
-const mailer = require("./config/mailer");
-const utils = require("./config/utils");
+const mailer = require("./server/config/mailer");
+const utils = require("./server/config/utils");
 // import environmental variables from our variables.env file
 // require('dotenv').config({ path: '../variables.env' });
 
@@ -15,13 +15,14 @@ process.env.PORT = config.port;
 const app = express();
 
 expressfile(app, config);
+app.use(express.static(path.join(__dirname, "build")));
 mongoose(config);
-require("./config/passport")();
+require("./server/config/passport")();
 
-require("./routes")(app);
+require("./server/routes")(app);
 
 app.get("*", function(req, res) {
-  // res.sendFile(path.join(__dirname + "/../dist/index.html"));
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 /*eslint no-console: 0*/

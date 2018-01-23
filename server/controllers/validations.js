@@ -84,6 +84,14 @@ exports.updateValidationComment = function(req, res) {
   validation.catch(err => handleError(err));
 };
 
+
+exports.updateValidationVms = (req, res) => {
+  	Validation.findByIdAndUpdate(req.params.id, {$push:{val_vms:req.body}}, () => {
+
+	res.sendStatus(200);
+	});
+};
+
 //TODO: Dump to CSV should user the report helper file - common action
 exports.dumpValidations = function(req, res) {
   //var status = 2;

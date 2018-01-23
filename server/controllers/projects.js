@@ -14,7 +14,7 @@ const uploaded = config.uploaded;
 exports.getProjects = function(req, res) {
   const status = req.params.status;
   Project.find({ pj_stat: { $lt: status } })
-    .select({ pj_no: 1, pj_title: 1, pj_champ: 1, pj_target: 1, pj_stat: 1, pj_objt: 1 })
+    .select({ pj_no: 1, pj_title: 1, pj_champ: 1, pj_target: 1, pj_stat: 1, pj_pry:1 })
     .sort({ pj_no: 1 })
     .exec(function(err, collection) {
       res.send(collection);

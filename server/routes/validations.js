@@ -6,7 +6,7 @@ router.get('/', validations.getValidations);
 router.post('/', validations.createValidation);
 
 router.put('/validationlog/:id', validations.updateValidationComment);
-
+router.put('/validation-vms/:id', validations.updateValidationVms);
 
 router
   .route('/:id')

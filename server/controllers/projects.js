@@ -126,7 +126,7 @@ exports.getProjectById = function(req, res) {
 
 exports.getReportData = function(status) {
   return Project.find({ pj_stat: { $lt: status } })
-    .select({ pj_no: 1, pj_title: 1, _id: 0 })
+    .select({ pj_no: 1, pj_title: 1, pj_pry:1, _id: 0 })
     .sort({ pj_target: 1 })
     .exec();
 };

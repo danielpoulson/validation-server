@@ -17,10 +17,11 @@ function createTaskReport(filename, search, regExSearch, status) {
 function getCombinedData(data) {
   const projectData = data;
   const _tasks = tasks.getReportData(5);
-  const fields = ['SourceId', '_name', 'TKName', 'TKStart', 'TKTarg', 'TKChamp', 'TKStat'];
-
+  const fields = ['SourceId', '_name', 'Pry', 'TKName', 'TKStart', 'TKTarg', 'TKChamp', 'TKStat' ];
+  const fieldNames = ['Project No', 'Project Description', 'Pry', 'Task Name', 'Start', 'Target', 'Champ', 'Status'];
+  
   _tasks.then(data => {
-    const reformattedArray = data.map(obj => {
+      const reformattedArray = data.map(obj => {
       const TKName = obj.TKName.replace(/,/g, '');
       const TKStart = typeof obj.TKStart != 'undefined' ? utils.dpFormatDate(obj.TKStart) : '';
       const TKTarg = typeof obj.TKTarg != 'undefined' ? utils.dpFormatDate(obj.TKTarg) : '';
@@ -32,11 +33,12 @@ function getCombinedData(data) {
 
       if (typeof _tasks === 'object') {
         const _name = _tasks.pj_title;
-        return { TKName, _name, TKTarg, TKStart, TKChamp, TKStat, SourceId };
+	const Pry = _tasks.pj_pry;      
+        return { TKName, _name, Pry, TKTarg, TKStart, TKChamp, TKStat, SourceId };
       }
     });
 
-    reporter.printToCSV(reformattedArray, reportName, fields);
+    reporter.printToCSV(reformattedArray, reportName, fields, fieldNames);
   });
 
   _tasks.catch(err => console.error(err));

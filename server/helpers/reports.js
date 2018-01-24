@@ -4,11 +4,11 @@ const config = require('../config/config.js');
 const fs = require('fs');
  
 /* eslint-disable no-console */
-function printToCSV(data, reportName, fields) {
+function printToCSV(data, reportName, fields, fieldNames) {
     const reportData = data;
     const file = config.uploaded +  reportName + '.csv';
    
-    json2csv({ data: reportData , fields: fields }, function(err, csv) {
+    json2csv({ data: reportData , fields: fields, fieldNames: fieldNames }, function(err, csv) {
         
         if (err) console.log(err);
         fs.writeFile(file, csv, function(err) {

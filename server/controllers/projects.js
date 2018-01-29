@@ -22,7 +22,8 @@ exports.getProjects = function(req, res) {
 };
 
 exports.getValProjects = (req, res) => {
-  Project.find({pj_link: req.params.id})
+  const search = new RegExp(req.params.id);
+  Project.find({pj_link: search})
     .select({ pj_no: 1, pj_title: 1, pj_champ: 1, pj_target: 1, pj_stat: 1})
     .sort({ pj_no: 1 })
     .exec((err, docs) => {

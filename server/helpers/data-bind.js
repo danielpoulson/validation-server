@@ -21,7 +21,8 @@ function getCombinedData(data) {
   const fieldNames = ['Project No', 'Project Description', 'Pry', 'Task Name', 'Start', 'Target', 'Champ', 'Status'];
   
   _tasks.then(data => {
-      const reformattedArray = data.map(obj => {
+      const reformattedArray = data.map(obj => 
+      {
       const TKName = obj.TKName.replace(/,/g, '');
       const TKStart = typeof obj.TKStart != 'undefined' ? utils.dpFormatDate(obj.TKStart) : '';
       const TKTarg = typeof obj.TKTarg != 'undefined' ? utils.dpFormatDate(obj.TKTarg) : '';
@@ -33,7 +34,7 @@ function getCombinedData(data) {
 
       if (typeof _tasks === 'object') {
         const _name = _tasks.pj_title;
-	const Pry = _tasks.pj_pry;      
+        const Pry = _tasks.pj_pry;      
         return { TKName, _name, Pry, TKTarg, TKStart, TKChamp, TKStat, SourceId };
       }
     });

@@ -1,20 +1,27 @@
-'use strict';
-const Project = require('mongoose').model('Project');
-const fs = require('fs');
-const files = require('../controllers/files');
-const tasks = require('../controllers/tasks');
-const users = require('../controllers/users');
-const mailer = require('../config/mailer.js');
-const utils = require('../config/utils');
-const server_data = require('../config/server_data');
-const config = require('../config/config.js');
+"use strict";
+const Project = require("mongoose").model("Project");
+const fs = require("fs");
+const files = require("../controllers/files");
+const tasks = require("../controllers/tasks");
+const users = require("../controllers/users");
+const mailer = require("../config/mailer.js");
+const utils = require("../config/utils");
+const server_data = require("../config/server_data");
+const config = require("../config/config.js");
 
 const uploaded = config.uploaded;
 
 exports.getProjects = function(req, res) {
   const status = req.params.status;
   Project.find({ pj_stat: { $lt: status } })
-    .select({ pj_no: 1, pj_title: 1, pj_champ: 1, pj_target: 1, pj_stat: 1, pj_pry:1 })
+    .select({
+      pj_no: 1,
+      pj_title: 1,
+      pj_champ: 1,
+      pj_target: 1,
+      pj_stat: 1,
+      pj_pry: 1
+    })
     .sort({ pj_no: 1 })
     .exec(function(err, collection) {
       res.send(collection);
@@ -22,8 +29,9 @@ exports.getProjects = function(req, res) {
 };
 
 exports.getValProjects = (req, res) => {
-  Project.find({pj_link: req.params.id})
-    .select({ pj_no: 1, pj_title: 1, pj_champ: 1, pj_target: 1, pj_stat: 1})
+  const search = new RegExp(req.params.id);
+  Project.find({ pj_link: search })
+    .select({ pj_no: 1, pj_title: 1, pj_champ: 1, pj_target: 1, pj_stat: 1 })
     .sort({ pj_no: 1 })
     .exec((err, docs) => {
       res.send(docs);
@@ -31,24 +39,24 @@ exports.getValProjects = (req, res) => {
 };
 
 exports.createProject = function(req, res, next) {
-  let newNum = '';
+  let newNum = "";
   const new_date = new Date();
   const yr = new_date
     .getFullYear()
     .toString()
     .substr(2, 2);
-  const search = new RegExp('PM' + yr);
+  const search = new RegExp("PM" + yr);
 
   const cnt = Project.count({ pj_no: search }).exec(function(err, count) {
     if (err) return err.toString();
 
-    newNum = 'PM' + (yr * 10000 + (count + 1));
+    newNum = "PM" + (yr * 10000 + (count + 1));
     req.body.pj_no = newNum;
 
     Project.create(req.body, function(err, _Projects) {
       if (err) {
-        if (err.toString().indexOf('E11000') > -1) {
-          err = new Error('Duplicate Username');
+        if (err.toString().indexOf("E11000") > -1) {
+          err = new Error("Duplicate Username");
         }
         res.status(400);
         return res.send({ reason: err.toString() });
@@ -60,11 +68,11 @@ exports.createProject = function(req, res, next) {
       user.then(user => {
         mailer.send({
           toEmail: user[0].email,
-          subject: 'Project Control',
-          emailType: 'Project Control',
+          subject: "Project Control",
+          emailType: "Project Control",
           ProjectAss: _Projects.pj_title,
           ProjectNo: _Projects.pj_no,
-          action: '',
+          action: "",
           target: utils.dpFormatDate(_Projects.pj_target)
         });
       });
@@ -87,11 +95,11 @@ exports.updateProject = function(req, res) {
       user.then(user => {
         mailer.send({
           toEmail: user[0].email,
-          subject: 'Project Control',
-          emailType: 'Project Control',
+          subject: "Project Control",
+          emailType: "Project Control",
           ProjectAss: _Projects.pj_title,
           ProjectNo: _Projects.pj_no,
-          action: '',
+          action: "",
           target: utils.dpFormatDate(_Projects.pj_target)
         });
       });
@@ -112,7 +120,11 @@ exports.updateProjectComment = function(req, res) {
 
   // req.body._id = Math.floor(Math.random() * (9999999 - 1)) + 1;
 
-  const project = Project.update({ pj_no: req.params.id }, { $addToSet: { pj_log: _update } }, { new: true });
+  const project = Project.update(
+    { pj_no: req.params.id },
+    { $addToSet: { pj_log: _update } },
+    { new: true }
+  );
 
   project.then(res.sendStatus(200));
   project.catch(err => handleError(err));
@@ -120,13 +132,14 @@ exports.updateProjectComment = function(req, res) {
 
 exports.getProjectById = function(req, res) {
   Project.findOne({ pj_no: req.params.id }).exec(function(err, project) {
+    // console.log(project);
     res.send(project);
   });
 };
 
 exports.getReportData = function(status) {
   return Project.find({ pj_stat: { $lt: status } })
-    .select({ pj_no: 1, pj_title: 1, pj_pry:1, _id: 0 })
+    .select({ pj_no: 1, pj_title: 1, pj_pry: 1, _id: 0 })
     .sort({ pj_target: 1 })
     .exec();
 };
@@ -135,7 +148,7 @@ exports.getReportData = function(status) {
 exports.getUserDashboard = function(req, res) {
   const dashboard = {};
   let _barData = [];
-  let username = '';
+  let username = "";
   dashboard.lineData = server_data.lineData;
   dashboard.barData = server_data.barData;
 
@@ -153,7 +166,9 @@ exports.getUserDashboard = function(req, res) {
     })
     .then(data => {
       username = data[0].fullname;
-      return Project.count({ $and: [{ pj_champ: username }, { pj_stat: { $lt: 4 } }] });
+      return Project.count({
+        $and: [{ pj_champ: username }, { pj_stat: { $lt: 4 } }]
+      });
     })
     .then(data => {
       dashboard.projectCount = data;
@@ -172,7 +187,7 @@ exports.getUserDashboard = function(req, res) {
         [
           {
             $group: {
-              _id: { $year:'$created'},
+              _id: { $year: "$created" },
               open: { $sum: 1 }
             }
           },
@@ -185,7 +200,7 @@ exports.getUserDashboard = function(req, res) {
             [
               {
                 $project: {
-                  Year: { $year: '$created' },
+                  Year: { $year: "$created" },
                   pj_stat: 1
                 }
               },
@@ -196,14 +211,14 @@ exports.getUserDashboard = function(req, res) {
               },
               {
                 $group: {
-                  _id: '$Year',
+                  _id: "$Year",
                   closed: { $sum: 1 }
                 }
               }
             ],
             function(err, result) {
               if (err) return console.error(err);
-              
+
               dashboard.barData = _barData.map(barData => {
                 const id = barData._id;
                 const _result = result.filter(obj => obj._id === id);
@@ -242,22 +257,22 @@ exports.getUserDashboard = function(req, res) {
 exports.dumpProjects = function(req, res) {
   //var status = 2;
   const int = parseInt(Math.random() * 1000000000, 10);
-  const file = uploaded + 'projects' + int + '.csv';
+  const file = uploaded + "projects" + int + ".csv";
   let fileData = {};
   const newDate = new Date();
 
   fileData.fsAddedAt = newDate;
   fileData.fsAddedBy = req.body.fsAddedBy;
-  fileData.fsFileName = 'projects' + int;
-  fileData.fsFileExt = 'csv';
+  fileData.fsFileName = "projects" + int;
+  fileData.fsFileExt = "csv";
   fileData.fsSource = req.body.fsSource;
-  fileData.fsFilePath = 'projects' + int + '.csv';
+  fileData.fsFilePath = "projects" + int + ".csv";
   fileData.fsBooked = 0;
 
   files.addExportFile(fileData); //
 
-  const _search = !req.body.search ? '.' : req.body.search;
-  const regExSearch = new RegExp(_search + '.*', 'i');
+  const _search = !req.body.search ? "." : req.body.search;
+  const regExSearch = new RegExp(_search + ".*", "i");
   const _status = req.body.showAll ? 5 : 4;
 
   Project.find({ pj_stat: { $lt: _status } })
@@ -272,7 +287,13 @@ exports.dumpProjects = function(req, res) {
       created: 1,
       _id: 0
     })
-    .where({ $or: [{ pj_champ: regExSearch }, { pj_no: regExSearch }, { pj_title: regExSearch }] })
+    .where({
+      $or: [
+        { pj_champ: regExSearch },
+        { pj_no: regExSearch },
+        { pj_title: regExSearch }
+      ]
+    })
     // .where({pj_champ : regExSearch })
     .cursor()
     .pipe(Project.csvTransformStream())

@@ -29,14 +29,22 @@ const projectSchema = new Schema({
       pj_actdept: String
     }
   ],
-  Linking: [{ type: Schema.Types.ObjectId, ref: "Task" }]
+  tasks: [{ type: Schema.Types.ObjectId, ref: "Task" }]
 });
 
-projectSchema.virtual("tasks", {
-  ref: "Task",
-  localField: "_id",
-  foreignField: "project"
-});
+function autoPopulate(next) {
+  this.populate("tasks");
+  next();
+}
+
+projectSchema.pre("find", autoPopulate);
+projectSchema.pre("findOne", autoPopulate);
+
+// projectSchema.virtual("tasks", {
+//   ref: "Task",
+//   localField: "_id",
+//   foreignField: "project"
+// });
 
 projectSchema.plugin(mongooseToCsv, {
   headers:

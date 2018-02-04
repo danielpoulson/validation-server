@@ -14,19 +14,7 @@ const taskSchema = new Schema({
   TKCapa: { type: Number, default: 0 },
   TKChampNew: { type: Boolean, default: false },
   datecreated: { type: Date, default: Date.now },
-  dateclosed: { type: Date },
-  project: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Project"
-  }
+  dateclosed: { type: Date }
 });
-
-function autoPopulate(next) {
-  this.populate("project");
-  next();
-}
-
-taskSchema.pre("find", autoPopulate);
-taskSchema.pre("findOne", autoPopulate);
 
 const Task = mongoose.model("Task", taskSchema);

@@ -2,6 +2,7 @@
 "use strict";
 /*eslint no-console: 0*/
 const Task = require("mongoose").model("Task");
+const Project = require("mongoose").model("Project");
 const users = require("../controllers/users");
 const files = require("../controllers/files");
 const mailer = require("../config/mailer.js");
@@ -37,31 +38,42 @@ exports.getProjectTaskList = function(req, res) {
   });
 };
 
-exports.updateTask = function(req, res) {
-  const query = { _id: req.params.id };
-  const newOwner = req.body.TKChampNew;
-  req.body.TKChampNew = false;
+// exports.updateTask = function(req, res) {
+//   const query = { _id: req.params.id };
+//   const newOwner = req.body.TKChampNew;
+//   req.body.TKChampNew = false;
 
-  Task.findOneAndUpdate(query, req.body, function(err) {
-    if (err) return handleError(err);
-    res.sendStatus(200);
+//   Task.findOneAndUpdate(query, req.body, function(err) {
+//     if (err) return handleError(err);
+//     res.sendStatus(200);
 
-    if (newOwner) {
-      const user = users.getUserEmail(req.body.TKChamp);
+//     if (newOwner) {
+//       const user = users.getUserEmail(req.body.TKChamp);
 
-      user.then(user => {
-        mailer.send({
-          toEmail: user[0].email,
-          subject: "Project Task",
-          emailType: "Project Task",
-          projectAss: "",
-          projectNo: req.body.SourceId,
-          action: `Action to complete : ${req.body.TKName}`,
-          target: utils.dpFormatDate(req.body.TKTarg)
-        });
-      });
-    }
-  });
+//       user.then(user => {
+//         mailer.send({
+//           toEmail: user[0].email,
+//           subject: "Project Task",
+//           emailType: "Project Task",
+//           projectAss: "",
+//           projectNo: req.body.SourceId,
+//           action: `Action to complete : ${req.body.TKName}`,
+//           target: utils.dpFormatDate(req.body.TKTarg)
+//         });
+//       });
+//     }
+//   });
+// };
+
+exports.updateTask = async (req, res) => {
+  const task = await Task.findOneAndUpdate(
+    { _id: req.params.id },
+    req.body
+  ).exec();
+
+  //TODO: Add the mailing function
+
+  res.sendStatus(200);
 };
 
 exports.deleteTask = function(req, res) {
@@ -85,30 +97,40 @@ exports.deleteTask = function(req, res) {
   });
 };
 
-exports.createTask = function(req, res, next) {
-  Task.create(req.body, function(err, task) {
-    if (err) {
-      if (err.toString().indexOf("E11000") > -1) {
-        err = new Error("Duplicate Task");
-      }
-      res.status(400);
-      return res.send({ reason: err.toString() });
-    }
-    res.status(200).send(task);
-    const user = users.getUserEmail(req.body.TKChamp);
+// exports.createTask = function(req, res, next) {
+//   Task.create(req.body, function(err, task) {
+//     if (err) {
+//       if (err.toString().indexOf("E11000") > -1) {
+//         err = new Error("Duplicate Task");
+//       }
+//       res.status(400);
+//       return res.send({ reason: err.toString() });
+//     }
+//     res.status(200).send(task);
+//     const user = users.getUserEmail(req.body.TKChamp);
 
-    user.then(user => {
-      mailer.send({
-        toEmail: user[0].email,
-        subject: "Project Task",
-        emailType: "Project Task",
-        projectAss: "",
-        projectNo: task.SourceId,
-        action: `Action to complete : ${task.TKName}`,
-        target: utils.dpFormatDate(task.TKTarg)
-      });
-    });
-  });
+//     user.then(user => {
+//       mailer.send({
+//         toEmail: user[0].email,
+//         subject: "Project Task",
+//         emailType: "Project Task",
+//         projectAss: "",
+//         projectNo: task.SourceId,
+//         action: `Action to complete : ${task.TKName}`,
+//         target: utils.dpFormatDate(task.TKTarg)
+//       });
+//     });
+//   });
+// };
+
+// When a new task is created a reference to that tasks is saved to the associated project
+exports.createTask = async (req, res) => {
+  const task = await new Task(req.body).save();
+  await Project.findOneAndUpdate(
+    { _id: req.body.projId },
+    { $push: { tasks: task._id } }
+  ).exec();
+  res.status(200).send(task);
 };
 
 exports.getTaskById = function(req, res) {

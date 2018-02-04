@@ -1,15 +1,17 @@
 //Ver.002 DP
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const tasks = require('../controllers/tasks');
+const tasks = require("../controllers/tasks");
+const { catchErrors } = require("../helpers/errorHandlers");
 
-router.get('/all/:status/:capa', tasks.getTasks);
-router.get('/project/:id', tasks.getProjectTaskList);
-router.route('/:id')
-    .get(tasks.getTaskById)
-    .put(tasks.updateTask)
-    .delete(tasks.deleteTask);
-router.post('/export', tasks.dumpTasks);
-router.post('/', tasks.createTask);
+router.get("/all/:status/:capa", tasks.getTasks);
+router.get("/project/:id", tasks.getProjectTaskList);
+router
+  .route("/:id")
+  .get(tasks.getTaskById)
+  .delete(tasks.deleteTask);
+router.put("/:id", catchErrors(tasks.updateTask));
+router.post("/export", tasks.dumpTasks);
+router.post("/", catchErrors(tasks.createTask));
 
- module.exports = router;
+module.exports = router;

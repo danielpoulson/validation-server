@@ -8,6 +8,7 @@ const mailer = require("../config/mailer.js");
 const utils = require("../config/utils");
 const server_data = require("../config/server_data");
 const config = require("../config/config.js");
+const { createProjectTaskReport } = require("../reports/project-tasks");
 
 const uploaded = config.uploaded;
 
@@ -132,7 +133,7 @@ exports.updateProjectComment = function(req, res) {
 
 exports.getProjectById = function(req, res) {
   Project.findOne({ pj_no: req.params.id }).exec(function(err, project) {
-    // console.log(project);
+    console.log(project);
     res.send(project);
   });
 };
@@ -251,6 +252,21 @@ exports.getUserDashboard = function(req, res) {
         }
       );
     });
+};
+
+exports.toMsProject = async (req, res) => {
+  const projects = await Project.find({ pj_stat: { $lt: 4 } })
+    .select({
+      _id: 0,
+      pj_no: 1,
+      pj_title: 1,
+      tasks: 1
+    })
+    .sort({ pj_no: 1 });
+
+  const csv = await createProjectTaskReport(projects);
+
+  res.send(csv).status(200);
 };
 
 //TODO: Dump to CSV should user the report helper file - common action

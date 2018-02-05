@@ -1,16 +1,35 @@
-const { printToCSV } = require("./reports");
+const { printToCSV } = require('./reports');
 
 exports.createProjectTaskReport = projects => {
-  //   const data = projects;
-  const reportName = "Project_Tasks_Report";
-  const fields = ["pj_no", "pj_title"];
-  const fieldNames = ["Project No", "Project Description"];
+  const reportName = 'Project_Tasks_Report';
+  const fields = [
+    { label: 'Project Description', value: 'pj_title' },
+    { label: 'Task Start', value: 'TKStart' },
+    { label: 'Task End', value: 'TKTarg' },
+    { label: 'Status', value: 'TKStat' },
+    { label: 'Resource', value: 'TKChamp' }
+  ];
+
+  let newArray = [];
 
   const data = projects.map(p => {
-    return { pjno: p.pj_no, pj_title: p.pj_title };
+    newArray = [...newArray, { pj_title: `${p.pj_no} - ${p.pj_title}` }];
+
+    if (p.tasks.length !== 0) {
+      p.tasks.map(t => {
+        newArray = [
+          ...newArray,
+          {
+            pj_title: t.TKName,
+            TKStart: t.TKStart,
+            TKTarg: t.TKTarg,
+            TKStat: t.TKStat,
+            TKChamp: t.TKChamp
+          }
+        ];
+      });
+    }
   });
 
-  return data;
-
-  //   return printToCSV(data, reportName, fields, fieldNames);
+  return printToCSV(newArray, reportName, fields);
 };

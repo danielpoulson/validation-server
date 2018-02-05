@@ -1,14 +1,14 @@
-"use strict";
-const Project = require("mongoose").model("Project");
-const fs = require("fs");
-const files = require("../controllers/files");
-const tasks = require("../controllers/tasks");
-const users = require("../controllers/users");
-const mailer = require("../config/mailer.js");
-const utils = require("../config/utils");
-const server_data = require("../config/server_data");
-const config = require("../config/config.js");
-const { createProjectTaskReport } = require("../reports/project-tasks");
+'use strict';
+const Project = require('mongoose').model('Project');
+const fs = require('fs');
+const files = require('../controllers/files');
+const tasks = require('../controllers/tasks');
+const users = require('../controllers/users');
+const mailer = require('../config/mailer.js');
+const utils = require('../config/utils');
+const server_data = require('../config/server_data');
+const config = require('../config/config.js');
+const { createProjectTaskReport } = require('../reports/project-tasks');
 
 const uploaded = config.uploaded;
 
@@ -40,24 +40,24 @@ exports.getValProjects = (req, res) => {
 };
 
 exports.createProject = function(req, res, next) {
-  let newNum = "";
+  let newNum = '';
   const new_date = new Date();
   const yr = new_date
     .getFullYear()
     .toString()
     .substr(2, 2);
-  const search = new RegExp("PM" + yr);
+  const search = new RegExp('PM' + yr);
 
   const cnt = Project.count({ pj_no: search }).exec(function(err, count) {
     if (err) return err.toString();
 
-    newNum = "PM" + (yr * 10000 + (count + 1));
+    newNum = 'PM' + (yr * 10000 + (count + 1));
     req.body.pj_no = newNum;
 
     Project.create(req.body, function(err, _Projects) {
       if (err) {
-        if (err.toString().indexOf("E11000") > -1) {
-          err = new Error("Duplicate Username");
+        if (err.toString().indexOf('E11000') > -1) {
+          err = new Error('Duplicate Username');
         }
         res.status(400);
         return res.send({ reason: err.toString() });
@@ -69,11 +69,11 @@ exports.createProject = function(req, res, next) {
       user.then(user => {
         mailer.send({
           toEmail: user[0].email,
-          subject: "Project Control",
-          emailType: "Project Control",
+          subject: 'Project Control',
+          emailType: 'Project Control',
           ProjectAss: _Projects.pj_title,
           ProjectNo: _Projects.pj_no,
-          action: "",
+          action: '',
           target: utils.dpFormatDate(_Projects.pj_target)
         });
       });
@@ -96,11 +96,11 @@ exports.updateProject = function(req, res) {
       user.then(user => {
         mailer.send({
           toEmail: user[0].email,
-          subject: "Project Control",
-          emailType: "Project Control",
+          subject: 'Project Control',
+          emailType: 'Project Control',
           ProjectAss: _Projects.pj_title,
           ProjectNo: _Projects.pj_no,
-          action: "",
+          action: '',
           target: utils.dpFormatDate(_Projects.pj_target)
         });
       });
@@ -149,7 +149,7 @@ exports.getReportData = function(status) {
 exports.getUserDashboard = function(req, res) {
   const dashboard = {};
   let _barData = [];
-  let username = "";
+  let username = '';
   dashboard.lineData = server_data.lineData;
   dashboard.barData = server_data.barData;
 
@@ -188,7 +188,7 @@ exports.getUserDashboard = function(req, res) {
         [
           {
             $group: {
-              _id: { $year: "$created" },
+              _id: { $year: '$created' },
               open: { $sum: 1 }
             }
           },
@@ -201,7 +201,7 @@ exports.getUserDashboard = function(req, res) {
             [
               {
                 $project: {
-                  Year: { $year: "$created" },
+                  Year: { $year: '$created' },
                   pj_stat: 1
                 }
               },
@@ -212,7 +212,7 @@ exports.getUserDashboard = function(req, res) {
               },
               {
                 $group: {
-                  _id: "$Year",
+                  _id: '$Year',
                   closed: { $sum: 1 }
                 }
               }
@@ -273,22 +273,22 @@ exports.toMsProject = async (req, res) => {
 exports.dumpProjects = function(req, res) {
   //var status = 2;
   const int = parseInt(Math.random() * 1000000000, 10);
-  const file = uploaded + "projects" + int + ".csv";
+  const file = uploaded + 'projects' + int + '.csv';
   let fileData = {};
   const newDate = new Date();
 
   fileData.fsAddedAt = newDate;
   fileData.fsAddedBy = req.body.fsAddedBy;
-  fileData.fsFileName = "projects" + int;
-  fileData.fsFileExt = "csv";
+  fileData.fsFileName = 'projects' + int;
+  fileData.fsFileExt = 'csv';
   fileData.fsSource = req.body.fsSource;
-  fileData.fsFilePath = "projects" + int + ".csv";
+  fileData.fsFilePath = 'projects' + int + '.csv';
   fileData.fsBooked = 0;
 
   files.addExportFile(fileData); //
 
-  const _search = !req.body.search ? "." : req.body.search;
-  const regExSearch = new RegExp(_search + ".*", "i");
+  const _search = !req.body.search ? '.' : req.body.search;
+  const regExSearch = new RegExp(_search + '.*', 'i');
   const _status = req.body.showAll ? 5 : 4;
 
   Project.find({ pj_stat: { $lt: _status } })

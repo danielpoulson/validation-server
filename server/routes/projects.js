@@ -3,7 +3,7 @@ const router = express.Router();
 const projects = require("../controllers/projects");
 const { catchErrors } = require("../helpers/errorHandlers");
 
-router.get("/alltoms", catchErrors(projects.toMsProject));
+router.post("/alltoms", catchErrors(projects.toMsProject));
 router.get("/all/:status", projects.getProjects);
 router.get("/byValidations/:id", projects.getValProjects);
 router.post("/", projects.createProject);

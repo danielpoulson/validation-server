@@ -1,7 +1,6 @@
 const { printToCSV } = require("./reports");
 
-exports.createProjectTaskReport = projects => {
-  const reportName = "Project_Tasks_Report";
+exports.createProjectTaskReport = (projects, reportName) => {
   const fields = [
     { label: "Outline Level", value: "outline" },
     { label: "Name", value: "pj_title" },

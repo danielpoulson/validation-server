@@ -12,7 +12,7 @@ const databind = require("../helpers/data-bind");
 
 const uploaded = config.uploaded;
 
-exports.getTasks = function(req, res) {
+exports.getTasks = function (req, res) {
   const status = req.params.status;
   const capa = req.params.capa || 0;
 
@@ -31,8 +31,8 @@ exports.getTasks = function(req, res) {
   tasks.then(tasks => res.send(tasks));
 };
 
-exports.getProjectTaskList = function(req, res) {
-  Task.find({ SourceId: req.params.id }, function(err, collection) {
+exports.getProjectTaskList = function (req, res) {
+  Task.find({ SourceId: req.params.id }, function (err, collection) {
     // console.log(collection);
     res.send(collection);
   });
@@ -76,17 +76,17 @@ exports.updateTask = async (req, res) => {
   res.sendStatus(200);
 };
 
-exports.deleteTask = function(req, res) {
+exports.deleteTask = function (req, res) {
   const taskId = req.params.id;
   let taskTitle = "";
   let SourceId = "";
   const user = req.user.fullname;
 
-  Task.findOne({ _id: taskId }).exec(function(err, task) {
+  Task.findOne({ _id: taskId }).exec(function (err, task) {
     taskTitle = task.TKName;
     SourceId = task.SourceId;
 
-    Task.remove({ _id: taskId }, function(err) {
+    Task.remove({ _id: taskId }, function (err) {
       if (err) return handleError(err);
       res.status(200).send(taskId);
     });
@@ -126,34 +126,34 @@ exports.deleteTask = function(req, res) {
 // When a new task is created a reference to that tasks is saved to the associated project
 exports.createTask = async (req, res) => {
   const task = await new Task(req.body).save();
-  await Project.findOneAndUpdate(
-    { _id: req.body.projId },
+  await Project.findByIdAndUpdate(
+    req.body.projId,
     { $push: { tasks: task._id } }
   ).exec();
   res.status(200).send(task);
 };
 
-exports.getTaskById = function(req, res) {
-  Task.findById(req.params.id).exec(function(err, task) {
+exports.getTaskById = function (req, res) {
+  Task.findById(req.params.id).exec(function (err, task) {
     res.send(task);
   });
 };
 
-exports.getTaskCount = function(req, res) {
-  Task.count({ SourceId: req.params.id }, function(err, taskCount) {
+exports.getTaskCount = function (req, res) {
+  Task.count({ SourceId: req.params.id }, function (err, taskCount) {
     res.send(taskCount.toString());
   });
 };
 
-exports.getTasksCountByUser = function(user) {
+exports.getTasksCountByUser = function (user) {
   return Task.count({ $and: [{ TKChamp: user }, { TKStat: { $lt: 5 } }] });
 };
 
-exports.getCountAll = function() {
+exports.getCountAll = function () {
   return Task.count({ TKStat: { $lt: 5 } });
 };
 
-exports.getReportData = function() {
+exports.getReportData = function () {
   return Task.find(
     { TKStat: { $lte: 4 } },
     { SourceId: 1, TKName: 1, TKTarg: 1, TKStart: 1, TKChamp: 1, TKStat: 1 }
@@ -162,7 +162,7 @@ exports.getReportData = function() {
     .exec();
 };
 
-exports.dumpTasks = function(req, res) {
+exports.dumpTasks = function (req, res) {
   const fileData = {};
   const newDate = new Date();
   const int = parseInt(Math.random() * 1000000000, 10);

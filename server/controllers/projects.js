@@ -12,7 +12,7 @@ const { createProjectTaskReport } = require('../reports/project-tasks');
 
 const uploaded = config.uploaded;
 
-exports.getProjects = function(req, res) {
+exports.getProjects = function (req, res) {
   const status = req.params.status;
   Project.find({ pj_stat: { $lt: status } })
     .select({
@@ -24,7 +24,7 @@ exports.getProjects = function(req, res) {
       pj_pry: 1
     })
     .sort({ pj_no: 1 })
-    .exec(function(err, collection) {
+    .exec(function (err, collection) {
       res.send(collection);
     });
 };
@@ -39,7 +39,7 @@ exports.getValProjects = (req, res) => {
     });
 };
 
-exports.createProject = function(req, res, next) {
+exports.createProject = function (req, res, next) {
   let newNum = '';
   const new_date = new Date();
   const yr = new_date
@@ -48,13 +48,13 @@ exports.createProject = function(req, res, next) {
     .substr(2, 2);
   const search = new RegExp('PM' + yr);
 
-  const cnt = Project.count({ pj_no: search }).exec(function(err, count) {
+  const cnt = Project.count({ pj_no: search }).exec(function (err, count) {
     if (err) return err.toString();
 
     newNum = 'PM' + (yr * 10000 + (count + 1));
     req.body.pj_no = newNum;
 
-    Project.create(req.body, function(err, _Projects) {
+    Project.create(req.body, function (err, _Projects) {
       if (err) {
         if (err.toString().indexOf('E11000') > -1) {
           err = new Error('Duplicate Username');
@@ -81,12 +81,12 @@ exports.createProject = function(req, res, next) {
   });
 };
 
-exports.updateProject = function(req, res) {
+exports.updateProject = function (req, res) {
   let _Projects = req.body;
   let _newOwner = _Projects.newOwner;
   delete _Projects.newOwner;
 
-  Project.update({ _id: req.body._id }, { $set: req.body }, function(err) {
+  Project.update({ _id: req.body._id }, { $set: req.body }, function (err) {
     if (err) return handleError(err);
     res.sendStatus(200);
 
@@ -108,7 +108,7 @@ exports.updateProject = function(req, res) {
   });
 };
 
-exports.updateProjectComment = function(req, res) {
+exports.updateProjectComment = function (req, res) {
   const pmID = req.body.pj_id || 4;
 
   const _update = {
@@ -131,14 +131,13 @@ exports.updateProjectComment = function(req, res) {
   project.catch(err => handleError(err));
 };
 
-exports.getProjectById = function(req, res) {
-  Project.findOne({ pj_no: req.params.id }).exec(function(err, project) {
-    console.log(project);
+exports.getProjectById = function (req, res) {
+  Project.findOne({ pj_no: req.params.id }).exec(function (err, project) {
     res.send(project);
   });
 };
 
-exports.getReportData = function(status) {
+exports.getReportData = function (status) {
   return Project.find({ pj_stat: { $lt: status } })
     .select({ pj_no: 1, pj_title: 1, pj_pry: 1, _id: 0 })
     .sort({ pj_target: 1 })
@@ -146,7 +145,7 @@ exports.getReportData = function(status) {
 };
 
 // This function gets the count for **active** tasks and project controls for the logged in user
-exports.getUserDashboard = function(req, res) {
+exports.getUserDashboard = function (req, res) {
   const dashboard = {};
   let _barData = [];
   let username = '';
@@ -158,7 +157,7 @@ exports.getUserDashboard = function(req, res) {
   const promise = Project.count({ pj_stat: { $lt: 4 } }).exec();
 
   promise
-    .catch(function(e) {
+    .catch(function (e) {
       console.log(e); // "oh, no!"
     })
     .then(data => {
@@ -194,7 +193,7 @@ exports.getUserDashboard = function(req, res) {
           },
           { $sort: { _id: 1 } }
         ],
-        function(err, result) {
+        function (err, result) {
           _barData = result;
 
           Project.aggregate(
@@ -217,7 +216,7 @@ exports.getUserDashboard = function(req, res) {
                 }
               }
             ],
-            function(err, result) {
+            function (err, result) {
               if (err) return console.error(err);
 
               dashboard.barData = _barData.map(barData => {
@@ -270,7 +269,7 @@ exports.toMsProject = async (req, res) => {
 };
 
 //TODO: Dump to CSV should user the report helper file - common action
-exports.dumpProjects = function(req, res) {
+exports.dumpProjects = function (req, res) {
   //var status = 2;
   const int = parseInt(Math.random() * 1000000000, 10);
   const file = uploaded + 'projects' + int + '.csv';

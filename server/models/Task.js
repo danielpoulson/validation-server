@@ -10,6 +10,7 @@ const taskSchema = new Schema({
   TKChamp: { type: String, required: "{PATH} is required!" },
   TKStat: { type: Number, required: "{PATH} is required!" },
   SourceId: { type: String, required: "{PATH} is required!" },
+  projId: { type: Schema.Types.ObjectId },
   TKComment: String,
   TKCapa: { type: Number, default: 0 },
   TKChampNew: { type: Boolean, default: false },

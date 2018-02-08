@@ -1,3 +1,4 @@
+const utils = require("../config/utils");
 const { printToCSV } = require("./reports");
 
 exports.createProjectTaskReport = (projects, reportName) => {
@@ -26,8 +27,14 @@ exports.createProjectTaskReport = (projects, reportName) => {
           {
             outline: 2,
             pj_title: t.TKName,
-            TKStart: t.TKStart,
-            TKTarg: t.TKTarg,
+            TKStart:
+              typeof t.TKStart != "undefined"
+                ? utils.dpFormatDate(t.TKStart)
+                : "",
+            TKTarg:
+              typeof t.TKTarg != "undefined"
+                ? utils.dpFormatDate(t.TKTarg)
+                : "",
             TKStat: t.TKStat,
             TKChamp: t.TKChamp,
             TKpcent: t.TKpcent

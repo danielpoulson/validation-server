@@ -13,6 +13,7 @@ const taskSchema = new Schema({
   projId: { type: Schema.Types.ObjectId },
   TKComment: String,
   TKCapa: { type: Number, default: 0 },
+  TKpcent: { type: Number, default: 0 },
   TKChampNew: { type: Boolean, default: false },
   datecreated: { type: Date, default: Date.now },
   dateclosed: { type: Date }

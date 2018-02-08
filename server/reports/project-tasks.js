@@ -7,7 +7,8 @@ exports.createProjectTaskReport = (projects, reportName) => {
     { label: "Start", value: "TKStart" },
     { label: "Finish", value: "TKTarg" },
     { label: "Status", value: "TKStat" },
-    { label: "Resource Name", value: "TKChamp" }
+    { label: "Resource Name", value: "TKChamp" },
+    { label: "% Complete", value: "TKpcent" }
   ];
 
   let newArray = [];
@@ -28,7 +29,8 @@ exports.createProjectTaskReport = (projects, reportName) => {
             TKStart: t.TKStart,
             TKTarg: t.TKTarg,
             TKStat: t.TKStat,
-            TKChamp: t.TKChamp
+            TKChamp: t.TKChamp,
+            TKpcent: t.TKpcent
           }
         ];
       });

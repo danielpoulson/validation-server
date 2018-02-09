@@ -273,7 +273,6 @@ exports.toMsProject = async (req, res) => {
 
   const projects = await Project.find({ pj_stat: { $lt: 4 } })
     .select({
-      _id: 0,
       pj_no: 1,
       pj_title: 1,
       tasks: 1

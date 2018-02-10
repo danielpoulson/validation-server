@@ -1,4 +1,4 @@
-const utils = require("../config/utils");
+const { dpFormatDate, compare } = require("../helpers/data-array");
 const { printToCSV } = require("./reports");
 
 exports.createProjectTaskReport = (projects, reportName) => {
@@ -22,20 +22,22 @@ exports.createProjectTaskReport = (projects, reportName) => {
     ];
 
     if (p.tasks.length !== 0) {
-      p.tasks.map(t => {
+      const sortedArray = p.tasks.sort((a, b) => {
+        if (a.TKStart < b.TKStart) return -1;
+        if (a.TKStart > b.TKStart) return 1;
+        return 0;
+      });
+
+      sortedArray.map(t => {
         newArray = [
           ...newArray,
           {
             outline: 2,
             pj_title: t.TKName,
             TKStart:
-              typeof t.TKStart != "undefined"
-                ? utils.dpFormatDate(t.TKStart)
-                : "",
+              typeof t.TKStart != "undefined" ? dpFormatDate(t.TKStart) : "",
             TKTarg:
-              typeof t.TKTarg != "undefined"
-                ? utils.dpFormatDate(t.TKTarg)
-                : "",
+              typeof t.TKTarg != "undefined" ? dpFormatDate(t.TKTarg) : "",
             TKStat: t.TKStat,
             TKChamp: t.TKChamp,
             TKpcent: t.TKpcent,

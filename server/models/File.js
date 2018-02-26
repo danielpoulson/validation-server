@@ -1,4 +1,3 @@
-//SYNC 11/03/2017 DP
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -10,8 +9,9 @@ const filesSchema = new Schema({
     fsAddedAt: {type: Date},
     fsSource: {type: String, required: '{PATH} is required!'},
     fsFilePath: {type: String},
-    fsBooked: {type: Number, required: '{PATH} is required!'}
-
+    fsBooked: {type: Number, required: '{PATH} is required!'},
+    fsGmp: {type: Boolean},
+    fsLog: []
 
 });
 

@@ -6,6 +6,7 @@ const tasks = require("../controllers/tasks");
 const users = require("../controllers/users");
 const mailer = require("../config/mailer.js");
 const utils = require("../config/utils");
+const { printToCSV } = require("../reports/reports");
 const server_data = require("../config/server_data");
 const config = require("../config/config.js");
 const { createProjectTaskReport } = require("../reports/project-tasks");
@@ -288,7 +289,7 @@ exports.toMsProject = async (req, res) => {
 };
 
 //TODO: Dump to CSV should user the report helper file - common action
-exports.dumpProjects = function (req, res) {
+exports.dumpProjects = async function (req, res) {
   //var status = 2;
   const int = parseInt(Math.random() * 1000000000, 10);
   const file = uploaded + "projects" + int + ".csv";
@@ -303,21 +304,25 @@ exports.dumpProjects = function (req, res) {
   fileData.fsFilePath = "projects" + int + ".csv";
   fileData.fsBooked = 0;
 
-  files.addExportFile(fileData); //
+  files.addExportFile(fileData); 
+
+
 
   const _search = !req.body.search ? "." : req.body.search;
   const regExSearch = new RegExp(_search + ".*", "i");
   const _status = req.body.showAll ? 5 : 4;
 
-  Project.find({ pj_stat: { $lt: _status } })
+  const projects = await Project.find({ pj_stat: { $lt: _status } })
     .select({
-      pj_no: true,
-      pj_title: true,
-      pj_champ: true,
-      pj_target: true,
-      pj_closed: true,
-      pj_cust: true,
-      pj_stat: true,
+      pj_no: 1,
+      pj_title: 1,
+      pj_pry: 1,
+      pj_champ: 1,
+      pj_start: 1,
+      pj_target: 1,
+      pj_closed: 1,
+      pj_cust: 1,
+      pj_stat: 1,
       created: 1,
       _id: 0
     })
@@ -327,12 +332,40 @@ exports.dumpProjects = function (req, res) {
         { pj_no: regExSearch },
         { pj_title: regExSearch }
       ]
-    })
-    // .where({pj_champ : regExSearch })
-    .cursor()
-    .pipe(Project.csvTransformStream())
-    .pipe(fs.createWriteStream(file))
-    .catch(err => console.log(err));
+    });
+
+    const _projects = await projects.map(p => {
+      let proj = {};
+      proj.pj_no = p.pj_no;
+      proj.pj_title = p.pj_title.replace(/,/g, "");
+      proj.pj_pry = p.pj_pry;
+      proj.pj_champ = p.pj_champ;
+      proj.pj_start = typeof p.pj_start != "undefined" ? utils.dpFormatDate(p.pj_start) : "";
+      proj.pj_target = typeof p.pj_target != "undefined" ? utils.dpFormatDate(p.pj_target) : "";
+      proj.pj_closed = typeof p.pj_closed != "undefined" ? utils.dpFormatDate(p.pj_closed) : "";
+      proj.pj_cust = p.pj_cust.replace(/,/g, "");
+      proj.pj_stat = p.pj_stat;
+      proj.created = typeof p.created != "undefined" ? utils.dpFormatDate(p.created) : "";
+      return proj;
+    });
+
+    const fields = [
+    { label: "No.", value: "pj_no" },
+    { label: "Description", value: "pj_title" },
+    { label: "Pry", value: "pj_pry" },
+    { label: "Start", value: "pj_start" },
+    { label: "Target", value: "pj_target" },
+    { label: "Closed", value: "pj_closed" },
+    { label: "Customer", value: "pj_cust" },
+    { label: "Status", value: "pj_stat" },
+    { label: "Resource Names", value: "pj_champ" },
+    { label: "Created", value: "created" }
+  ];
+
+  const reportName = "projects" + int;
+
+  printToCSV(_projects, reportName, fields);
+
 
   //Create an id for use on the client side
   fileData._id = int;

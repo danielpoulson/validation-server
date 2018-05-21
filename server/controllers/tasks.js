@@ -14,9 +14,11 @@ const uploaded = config.uploaded;
 
 exports.getTasks = function(req, res) {
   const status = req.params.status;
-  const capa = req.params.capa || 0;
+  // const capa = req.params.capa || 1;
+  const capa = 1;
 
-  const tasks = Task.find({ TKStat: { $lte: status } })
+
+  const tasks = Task.find({ TKStat: {$gt: capa, $lte: status} })
     .select({
       SourceId: 1,
       TKName: 1,

@@ -55,7 +55,7 @@ exports.createProject = function (req, res, next) {
     newNum = "PM" + (yr * 10000 + (count + 1));
     req.body.pj_no = newNum;
 
-    Project.create(req.body, function (err, _Projects) {
+    Project.create(req.body, function (err, _project) {
       if (err) {
         if (err.toString().indexOf("E11000") > -1) {
           err = new Error("Duplicate Username");
@@ -63,19 +63,27 @@ exports.createProject = function (req, res, next) {
         res.status(400);
         return res.send({ reason: err.toString() });
       }
-      res.status(200).send(_Projects);
+      res.status(200).send({
+          _id: _project._id,
+          pj_no: _project.pj_no,
+          pj_title: _project.pj_title,
+          pj_champ: _project.pj_champ,
+          pj_target: _project.pj_target,
+          pj_stat: _project.pj_stat,
+          pj_pry: _project.pj_pry
+        });
 
-      const user = users.getUserEmail(_Projects.pj_champ);
+      const user = users.getUserEmail(_project.pj_champ);
 
       user.then(user => {
         mailer.send({
           toEmail: user[0].email,
           subject: "Project Control",
           emailType: "Project Control",
-          ProjectAss: _Projects.pj_title,
-          ProjectNo: _Projects.pj_no,
+          ProjectAss: _project.pj_title,
+          ProjectNo: _project.pj_no,
           action: "",
-          target: utils.dpFormatDate(_Projects.pj_target)
+          target: utils.dpFormatDate(_project.pj_target)
         });
       });
     });
@@ -128,15 +136,23 @@ exports.updateProjectComment = function (req, res) {
     { new: true }
   );
 
-  project.then(res.sendStatus(200));
+  project.then(com => res.send(com));
   project.catch(err => handleError(err));
 };
 
-exports.getProjectById = function (req, res) {
-  Project.findOne({ pj_no: req.params.id }).exec(function (err, project) {
-    res.send(project);
-  });
+exports.getProjectById = async (req, res) => {
+  const id = req.params.id;
+  const project = await Project.findOne({ pj_no: id });
+  const _tasks = await tasks.findProjectTasksById(id);
+  res.send({project, tasks: _tasks});
 };
+
+// exports.getEquipment = async (req, res) => {
+//   const equipment = req.equipment;
+//   const calibrations = await Calibration.getCalListBySource(equipment.equipNo);
+//   const events = await Event.getEventBySource(equipment.equipNo);
+//   res.send({equipment, planned: calibrations, events});
+// };
 
 exports.getReportData = function (status) {
   return Project.find({ pj_stat: { $lt: status } })

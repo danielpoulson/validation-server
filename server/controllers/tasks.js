@@ -35,10 +35,22 @@ exports.getTasks = function(req, res) {
 
 exports.getProjectTaskList = function(req, res) {
   Task.find({ SourceId: req.params.id }, function(err, collection) {
-    // console.log(collection);
     res.send(collection);
   });
 };
+
+const findProjectTasksById = (id) => {
+  return Task.find({ SourceId: id })
+    .select({
+      TKName: 1,
+      TKTarg: 1,
+      TKChamp: 1,
+      TKStat: 1,
+      SourceId: 1,
+      TKCapa: 1
+  });
+  
+}
 
 // exports.updateTask = function(req, res) {
 //   const query = { _id: req.params.id };
@@ -208,3 +220,5 @@ exports.dumpTasks = function(req, res) {
 function handleError(err) {
   console.log(err);
 }
+
+exports.findProjectTasksById = findProjectTasksById;

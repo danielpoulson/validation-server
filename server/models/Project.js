@@ -27,22 +27,7 @@ const projectSchema = new Schema({
       pj_action: String,
       pj_actdept: String
     }
-  ],
-  tasks: [{ type: Schema.Types.ObjectId, ref: "Task" }]
+  ]
 });
-
-function autoPopulate(next) {
-  this.populate("tasks");
-  next();
-}
-
-projectSchema.pre("find", autoPopulate);
-projectSchema.pre("findOne", autoPopulate);
-
-// projectSchema.virtual("tasks", {
-//   ref: "Task",
-//   localField: "_id",
-//   foreignField: "project"
-// });
 
 const Project = mongoose.model("Project", projectSchema);

@@ -144,7 +144,6 @@ exports.getProjectById = async (req, res) => {
   const id = req.params.id;
   const project = await Project.findOne({ pj_no: id });
   const _files = await files.getFileBySourceId(id);
-  console.log(project);
   res.send({project, files: _files});
 };
 
@@ -278,8 +277,6 @@ exports.toMsProject = async (req, res) => {
       tasks: 1
     })
     .sort({ pj_no: 1 });
-
-    console.log(projects)
 
   const csv = await createProjectTaskReport(projects);
 

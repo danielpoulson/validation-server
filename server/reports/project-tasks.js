@@ -1,7 +1,7 @@
 const { dpFormatDate, compare } = require("../helpers/data-array");
 const { printToCSV } = require("./reports");
 
-exports.createProjectTaskReport = (projects, reportName) => {
+exports.createProjectTaskReport = (projects) => {
   const fields = [
     { label: "Outline Level", value: "outline" },
     { label: "Name", value: "pj_title" },
@@ -48,5 +48,5 @@ exports.createProjectTaskReport = (projects, reportName) => {
     }
   });
 
-  return printToCSV(newArray, reportName, fields);
+  return printToCSV(newArray, fields);
 };

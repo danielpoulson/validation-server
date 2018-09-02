@@ -1,19 +1,14 @@
-//SYNC 11/03/2017 DP
-const json2csv = require('json2csv');
+const Json2csvParser = require("json2csv").Parser;
 const config = require('../config/config.js');
 const fs = require('fs');
 
 /* eslint-disable no-console */
-function printToCSV(data, reportName, fields) {
-  const reportData = data;
-  const file = config.uploaded + reportName + '.csv';
+function printToCSV(data, fields) {
 
-  json2csv({ data: reportData, fields: fields }, function(err, csv) {
-    if (err) console.log(err);
-    fs.writeFile(file, csv, function(err) {
-      console.log('file saved');
-    });
-  });
+  const json2csv = new Json2csvParser({ fields });
+  const csv = json2csv.parse(data);
+
+  return csv
 }
 
 exports.printToCSV = printToCSV;

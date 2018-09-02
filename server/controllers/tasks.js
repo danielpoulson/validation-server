@@ -1,14 +1,15 @@
-//SYNC VER.002 DP
 "use strict";
 /*eslint no-console: 0*/
 const Task = require("mongoose").model("Task");
 const Project = require("mongoose").model("Project");
+const projects = require("../controllers/projects");
 const users = require("../controllers/users");
 const files = require("../controllers/files");
 const mailer = require("../config/mailer.js");
 const config = require("../config/config.js");
 const utils = require("../config/utils");
 const databind = require("../helpers/data-bind");
+const { printToCSV } = require("../reports/reports");
 
 const uploaded = config.uploaded;
 
@@ -39,7 +40,7 @@ exports.getProjectTaskList = function(req, res) {
   });
 };
 
-const findProjectTasksById = (id) => {
+function findProjectTasksById(id) {
   return Task.find({ SourceId: id })
     .select({
       TKName: 1,
@@ -51,33 +52,6 @@ const findProjectTasksById = (id) => {
   });
   
 }
-
-// exports.updateTask = function(req, res) {
-//   const query = { _id: req.params.id };
-//   const newOwner = req.body.TKChampNew;
-//   req.body.TKChampNew = false;
-
-//   Task.findOneAndUpdate(query, req.body, function(err) {
-//     if (err) return handleError(err);
-//     res.sendStatus(200);
-
-//     if (newOwner) {
-//       const user = users.getUserEmail(req.body.TKChamp);
-
-//       user.then(user => {
-//         mailer.send({
-//           toEmail: user[0].email,
-//           subject: "Project Task",
-//           emailType: "Project Task",
-//           projectAss: "",
-//           projectNo: req.body.SourceId,
-//           action: `Action to complete : ${req.body.TKName}`,
-//           target: utils.dpFormatDate(req.body.TKTarg)
-//         });
-//       });
-//     }
-//   });
-// };
 
 exports.updateTask = async (req, res) => {
   const newOwner = req.body.TKChampNew;
@@ -126,38 +100,11 @@ exports.deleteTask = function(req, res) {
   });
 };
 
-// exports.createTask = function(req, res, next) {
-//   Task.create(req.body, function(err, task) {
-//     if (err) {
-//       if (err.toString().indexOf("E11000") > -1) {
-//         err = new Error("Duplicate Task");
-//       }
-//       res.status(400);
-//       return res.send({ reason: err.toString() });
-//     }
-//     res.status(200).send(task);
-//     const user = users.getUserEmail(req.body.TKChamp);
-
-//     user.then(user => {
-//       mailer.send({
-//         toEmail: user[0].email,
-//         subject: "Project Task",
-//         emailType: "Project Task",
-//         projectAss: "",
-//         projectNo: task.SourceId,
-//         action: `Action to complete : ${task.TKName}`,
-//         target: utils.dpFormatDate(task.TKTarg)
-//       });
-//     });
-//   });
-// };
 
 // When a new task is created a reference to that tasks is saved to the associated project
 exports.createTask = async (req, res) => {
   const task = await new Task(req.body).save();
-  await Project.findByIdAndUpdate(req.body.projId, {
-    $push: { tasks: task._id }
-  }).exec();
+  projects.addTaskRed(req.body.projId,task._id);
   res.status(200).send(task);
 };
 
@@ -190,31 +137,59 @@ exports.getReportData = function() {
     .exec();
 };
 
-exports.dumpTasks = function(req, res) {
-  const fileData = {};
-  const newDate = new Date();
-  const int = parseInt(Math.random() * 1000000000, 10);
-  const filename = "tasks" + int;
-
-  fileData.fsAddedAt = newDate;
-  fileData.fsAddedBy = req.body.fsAddedBy;
-  fileData.fsFileName = filename;
-  fileData.fsFileExt = "csv";
-  fileData.fsSource = req.body.fsSource;
-  fileData.fsFilePath = "tasks" + int + ".csv";
-  fileData.fsBooked = 0;
-
-  files.addExportFile(fileData);
+exports.dumpTasks = async function(req, res) {
 
   const _search = !req.body.search ? "." : req.body.search;
   const regExSearch = new RegExp(_search + ".*", "i");
   const _status = 4;
+  const fields = [ 
+    {
+      label: 'Project No',
+      value: 'SourceId'
+    },
+    {
+      label: 'Project Description',
+      value: '_name'
+    },
+    {
+      label: 'Pry',
+      value: 'Pry'
+    },
+    {
+      label: 'Task Name',
+      value: 'TKName'
+    },
+    {
+      label: 'Start',
+      value: 'TKStart'
+    },
+    {
+      label: 'Target',
+      value: 'TKTarg'
+    },
+    {
+      label: 'Champ',
+      value: 'TKChamp'
+    },
+    {
+      label: 'Status',
+      value: 'TKStat'
+    }
+  ];
 
-  //Create an id for use on the client side
-  fileData._id = int;
 
-  databind.createTaskReport(filename, _search, regExSearch, _status);
-  res.send(fileData);
+  const data = await databind.createTaskReport(_search, regExSearch, _status);
+
+  const csv = printToCSV(data, fields);
+
+  try {
+    res.setHeader("Content-disposition", "attachment; filename=data.csv");
+    res.set("Content-Type", "text/csv");
+    res.status(200).send(csv);
+  } catch (err) {
+    console.error(err);
+  }
+
 };
 
 function handleError(err) {

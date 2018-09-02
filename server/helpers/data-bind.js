@@ -2,27 +2,20 @@
 const projects = require('../controllers/projects');
 const tasks = require('../controllers/tasks');
 const utils = require('../config/utils');
-const reporter = require('./reports');
+const reporter = require('../reports/reports');
 
 let reportName = '';
 let _status = '';
 
-function createTaskReport(filename, search, regExSearch, status) {
-  reportName = filename;
-  _status = status;
-  const p = projects.getReportData(5);
-  p.then(data => getCombinedData(data));
-}
+exports.createTaskReport = async function (search, regExSearch, status) {
 
-function getCombinedData(data) {
-  const projectData = data;
-  const _tasks = tasks.getReportData(5);
-  const fields = ['SourceId', '_name', 'Pry', 'TKName', 'TKStart', 'TKTarg', 'TKChamp', 'TKStat' ];
-  const fieldNames = ['Project No', 'Project Description', 'Pry', 'Task Name', 'Start', 'Target', 'Champ', 'Status'];
+  _status = status;
+  const projectData = await projects.getReportData(5);
+  const _tasks = await tasks.getReportData(5);
   
-  _tasks.then(data => {
-      const reformattedArray = data.map(obj => 
-      {
+
+  const reformattedArray = _tasks.map(obj => 
+    {
       const TKName = obj.TKName.replace(/,/g, '');
       const TKStart = typeof obj.TKStart != 'undefined' ? utils.dpFormatDate(obj.TKStart) : '';
       const TKTarg = typeof obj.TKTarg != 'undefined' ? utils.dpFormatDate(obj.TKTarg) : '';
@@ -39,10 +32,11 @@ function getCombinedData(data) {
       }
     });
 
-    reporter.printToCSV(reformattedArray, reportName, fields, fieldNames);
-  });
+    console.log(reformattedArray);
 
-  _tasks.catch(err => console.error(err));
+    return reformattedArray;
+
+
 }
 
 function getStatus(status) {
@@ -62,4 +56,4 @@ function getStatus(status) {
   }
 }
 
-exports.createTaskReport = createTaskReport;
+ 

@@ -143,16 +143,15 @@ exports.updateProjectComment = function (req, res) {
 exports.getProjectById = async (req, res) => {
   const id = req.params.id;
   const project = await Project.findOne({ pj_no: id });
-  const _tasks = await tasks.findProjectTasksById(id);
-  res.send({project, tasks: _tasks});
+  const _files = await files.getFileBySourceId(id);
+  console.log(project);
+  res.send({project, files: _files});
 };
 
-// exports.getEquipment = async (req, res) => {
-//   const equipment = req.equipment;
-//   const calibrations = await Calibration.getCalListBySource(equipment.equipNo);
-//   const events = await Event.getEventBySource(equipment.equipNo);
-//   res.send({equipment, planned: calibrations, events});
-// };
+exports.addTaskRef = (projid, taskid) => {
+  Project.findByIdAndUpdate(projid, { $push: { tasks: taskid}})
+}
+
 
 exports.getReportData = function (status) {
   return Project.find({ pj_stat: { $lt: status } })
@@ -271,22 +270,6 @@ exports.getUserDashboard = function (req, res) {
 };
 
 exports.toMsProject = async (req, res) => {
-  console.log("toMsProject");
-  const int = parseInt(Math.random() * 1000000000, 10);
-  const file = uploaded + "MStasks" + int + ".csv";
-  let fileData = {};
-  const newDate = new Date();
-  const filename = "MStasks" + int;
-
-  fileData.fsAddedAt = newDate;
-  fileData.fsAddedBy = req.body.fsAddedBy;
-  fileData.fsFileName = "MStasks" + int;
-  fileData.fsFileExt = "csv";
-  fileData.fsSource = req.body.fsSource;
-  fileData.fsFilePath = "MStasks" + int + ".csv";
-  fileData.fsBooked = 0;
-
-  files.addExportFile(fileData); //
 
   const projects = await Project.find({ pj_stat: { $lt: 4 } })
     .select({
@@ -296,32 +279,22 @@ exports.toMsProject = async (req, res) => {
     })
     .sort({ pj_no: 1 });
 
-  // databind.createTaskReport(filename, _search, regExSearch, _status);
+    console.log(projects)
 
-  const csv = await createProjectTaskReport(projects, filename);
+  const csv = await createProjectTaskReport(projects);
 
-  fileData._id = int;
-  res.send(fileData);
+  try {
+
+    res.setHeader("Content-disposition", "attachment; filename=data.csv");
+    res.set("Content-Type", "text/csv");
+    res.status(200).send(csv);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 //TODO: Dump to CSV should user the report helper file - common action
 exports.dumpProjects = async function (req, res) {
-  //var status = 2;
-  const int = parseInt(Math.random() * 1000000000, 10);
-  const file = uploaded + "projects" + int + ".csv";
-  let fileData = {};
-  const newDate = new Date();
-
-  fileData.fsAddedAt = newDate;
-  fileData.fsAddedBy = req.body.fsAddedBy;
-  fileData.fsFileName = "projects" + int;
-  fileData.fsFileExt = "csv";
-  fileData.fsSource = req.body.fsSource;
-  fileData.fsFilePath = "projects" + int + ".csv";
-  fileData.fsBooked = 0;
-
-  files.addExportFile(fileData); 
-
 
 
   const _search = !req.body.search ? "." : req.body.search;
@@ -378,14 +351,19 @@ exports.dumpProjects = async function (req, res) {
     { label: "Created", value: "created" }
   ];
 
-  const reportName = "projects" + int;
 
-  printToCSV(_projects, reportName, fields);
+  const csv = printToCSV(_projects, fields);
 
 
-  //Create an id for use on the client side
-  fileData._id = int;
-  res.send(fileData);
+  try {
+
+    res.setHeader("Content-disposition", "attachment; filename=data.csv");
+    res.set("Content-Type", "text/csv");
+    res.status(200).send(csv);
+  } catch (err) {
+    console.error(err);
+  }
+
 };
 
 /*eslint no-console: 0*/

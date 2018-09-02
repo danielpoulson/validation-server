@@ -27,7 +27,18 @@ const projectSchema = new Schema({
       pj_action: String,
       pj_actdept: String
     }
-  ]
+  ],
+  tasks: [{ type: Schema.Types.ObjectId, ref: "Task" }],
+  files: [{ type: Schema.Types.ObjectId, ref: "File" }]
 });
+
+function autoPopulate(next) {
+  this.populate("tasks");
+  this.populate("files");
+  next();
+}
+
+projectSchema.pre("find", autoPopulate);
+projectSchema.pre("findOne", autoPopulate);
 
 const Project = mongoose.model("Project", projectSchema);

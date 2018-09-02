@@ -101,6 +101,10 @@ exports.getFiles = function (req, res) {
     });
 };
 
+const getFileBySourceId = (id) => {
+    return File.find({fsSource: id});
+}
+
 exports.deletefile = function (req, res) {
     const id = req.params.id;
 
@@ -139,3 +143,4 @@ exports.updateFileBook = function(req,res){
 };
 
 exports.addExportFile = addExportFile;
+exports.getFileBySourceId = getFileBySourceId;

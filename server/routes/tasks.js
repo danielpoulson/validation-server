@@ -13,5 +13,6 @@ router
 router.put("/:id", catchErrors(tasks.updateTask));
 router.post("/export", tasks.dumpTasks);
 router.post("/", catchErrors(tasks.createTask));
+router.post("/test", tasks.test);
 
 module.exports = router;

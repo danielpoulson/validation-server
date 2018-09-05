@@ -34,6 +34,25 @@ exports.getTasks = function(req, res) {
   tasks.then(tasks => res.send(tasks));
 };
 
+exports.test = (req, res) => {
+
+  const projects = getTasksByProjects();
+  console.log(projects);
+  res.sendStatus(200);
+}
+
+const getTasksByProjects = async () => {
+
+  return Task.find()
+    .populate(
+      {
+        path: 'projId',
+        match: { pj_stat: { $lt: 4 }},
+        select: 'pj_title pj_no pj_stat'
+      });
+  }
+
+
 exports.getProjectTaskList = function(req, res) {
   Task.find({ SourceId: req.params.id }, function(err, collection) {
     res.send(collection);
@@ -49,8 +68,7 @@ function findProjectTasksById(id) {
       TKStat: 1,
       SourceId: 1,
       TKCapa: 1
-  });
-  
+  }).exec();
 }
 
 exports.updateTask = async (req, res) => {
@@ -104,7 +122,6 @@ exports.deleteTask = function(req, res) {
 // When a new task is created a reference to that tasks is saved to the associated project
 exports.createTask = async (req, res) => {
   const task = await new Task(req.body).save();
-  projects.addTaskRed(req.body.projId,task._id);
   res.status(200).send(task);
 };
 
@@ -197,3 +214,4 @@ function handleError(err) {
 }
 
 exports.findProjectTasksById = findProjectTasksById;
+exports.getTasksByProjects = getTasksByProjects;

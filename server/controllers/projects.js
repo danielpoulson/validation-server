@@ -144,12 +144,14 @@ exports.getProjectById = async (req, res) => {
   const id = req.params.id;
   const project = await Project.findOne({ pj_no: id });
   const _files = await files.getFileBySourceId(id);
-  res.send({project, files: _files});
+  const _tasks = await tasks.findProjectTasksById(id);
+  res.send({project, files: _files, tasks: _tasks});
 };
 
-exports.addTaskRef = (projid, taskid) => {
-  Project.findByIdAndUpdate(projid, { $push: { tasks: taskid}})
-}
+// exports.addTaskRef = (projId, taskId) => {
+//   const project = Project.findOne({ pj_no: id })
+//   Project.findByIdAndUpdate(projId, { $push: { tasks: taskId}});
+// }
 
 
 exports.getReportData = function (status) {
@@ -268,17 +270,27 @@ exports.getUserDashboard = function (req, res) {
     });
 };
 
+
 exports.toMsProject = async (req, res) => {
 
   const projects = await Project.find({ pj_stat: { $lt: 4 } })
     .select({
       pj_no: 1,
-      pj_title: 1,
-      tasks: 1
+      pj_title: 1
     })
     .sort({ pj_no: 1 });
 
-  const csv = await createProjectTaskReport(projects);
+  const _tasks = await tasks.getTasksByProjects();
+
+  const msProject = projects.map(p => {
+    const _proj = {};
+    _proj.pj_no = p.pj_no;
+    _proj.pj_title = p.pj_title;
+    _proj.tasks = _tasks.filter(t => t.SourceId === p.pj_no);
+    return _proj;
+  })
+
+  const csv = await createProjectTaskReport(msProject);
 
   try {
 

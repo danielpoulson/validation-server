@@ -9,8 +9,7 @@ exports.createProjectTaskReport = (projects) => {
     { label: "Finish", value: "TKTarg" },
     { label: "Status", value: "TKStat" },
     { label: "Resource Names", value: "TKChamp" },
-    { label: "% Complete", value: "TKpcent" },
-    { label: "Text1", value: "_id" }
+    { label: "% Complete", value: "TKpcent" }
   ];
 
   let newArray = [];
@@ -18,7 +17,7 @@ exports.createProjectTaskReport = (projects) => {
   const data = projects.map(p => {
     newArray = [
       ...newArray,
-      { outline: 1, pj_title: `${p.pj_no} - ${p.pj_title}`, _id: p._id }
+      { outline: 1, pj_title: `${p.pj_no} - ${p.pj_title}` }
     ];
 
     if (p.tasks.length !== 0) {

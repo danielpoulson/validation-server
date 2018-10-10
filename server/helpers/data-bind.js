@@ -32,8 +32,6 @@ exports.createTaskReport = async function (search, regExSearch, status) {
       }
     });
 
-    console.log(reformattedArray);
-
     return reformattedArray;
 
 

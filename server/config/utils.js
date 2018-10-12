@@ -14,6 +14,11 @@ exports.dpDashDates = function(){
 	return dates;
 };
 
+exports.diffDates = (d1, d2) => {
+  const a = moment(d1);
+  const b = moment(d2);
+  return a.diff(b, 'days')
+}
 exports.write_to_log = function(write_data) {
     const fs = require("fs");
     const path = '.././logs/logs.txt';

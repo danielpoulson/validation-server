@@ -3,6 +3,7 @@ const projects = require('../controllers/projects');
 const tasks = require('../controllers/tasks');
 const utils = require('../config/utils');
 const reporter = require('../reports/reports');
+const Moment = require('moment');
 
 let reportName = '';
 let _status = '';
@@ -35,6 +36,24 @@ exports.createTaskReport = async function (search, regExSearch, status) {
     return reformattedArray;
 
 
+}
+
+exports.createProjectTaskReport = async (id) => {
+  const _tasks = await tasks.findProjectTasksById(id);
+  const returned = _tasks.map(obj => {
+
+    const TKName = obj.TKName;
+    const TKStart = typeof obj.TKStart != 'undefined' ? utils.dpFormatDate(obj.TKStart) : '';
+    const TKTarg = typeof obj.TKTarg != 'undefined' ? utils.dpFormatDate(obj.TKTarg) : '';
+    const TKChamp = obj.TKChamp;
+    const TKStat = obj.TKStat;
+    const TKpcent = obj.TKpcent * 100
+    const dur = utils.diffDates(obj.TKTarg, obj.TKStart);
+
+    return { TKName, TKStart, TKTarg, dur, TKChamp, TKStat, TKpcent}
+    });
+
+  return returned; 
 }
 
 function getStatus(status) {

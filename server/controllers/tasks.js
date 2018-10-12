@@ -63,11 +63,13 @@ function findProjectTasksById(id) {
   return Task.find({ SourceId: id })
     .select({
       TKName: 1,
+      TKStart: 1,
       TKTarg: 1,
       TKChamp: 1,
       TKStat: 1,
       SourceId: 1,
-      TKCapa: 1
+      TKCapa: 1,
+      TKpcent: 1
   }).exec();
 }
 
@@ -208,6 +210,56 @@ exports.dumpTasks = async function(req, res) {
   }
 
 };
+
+exports.dumpProjectsTaskList = async (req, res) => {
+  const source = req.params.id;
+
+  const fields = [ 
+
+    {
+      label: 'Task Name',
+      value: 'TKName'
+    },
+    {
+      label: 'Status',
+      value: 'TKStat'
+    },
+    {
+      label: 'Start',
+      value: 'TKStart'
+    },
+    {
+      label: 'Dur',
+      value: 'dur'
+    },
+    {
+      label: 'Target',
+      value: 'TKTarg'
+    },    
+    {
+      label: 'Champ',
+      value: 'TKChamp'
+    },
+    {
+      label: 'Per%',
+      value: 'TKpcent'
+    }
+  ];
+
+
+  const data = await databind.createProjectTaskReport(source);
+
+  const csv = printToCSV(data, fields);
+
+  try {
+    res.setHeader("Content-disposition", "attachment; filename=data.csv");
+    res.set("Content-Type", "text/csv");
+    res.status(200).send(csv);
+  } catch (err) {
+    console.error(err);
+  }
+
+}
 
 function handleError(err) {
   console.log(err);

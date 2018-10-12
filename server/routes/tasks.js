@@ -12,6 +12,7 @@ router
   .delete(tasks.deleteTask);
 router.put("/:id", catchErrors(tasks.updateTask));
 router.post("/export", tasks.dumpTasks);
+router.post("/projecttasklist/:id", tasks.dumpProjectsTaskList);
 router.post("/", catchErrors(tasks.createTask));
 router.post("/test", tasks.test);
 

@@ -9,6 +9,7 @@ const mailer = require("../config/mailer.js");
 const config = require("../config/config.js");
 const utils = require("../config/utils");
 const databind = require("../helpers/data-bind");
+const trello = require("../helpers/trello");
 const { printToCSV } = require("../reports/reports");
 
 const uploaded = config.uploaded;
@@ -126,6 +127,23 @@ exports.createTask = async (req, res) => {
   const task = await new Task(req.body).save();
   res.status(200).send(task);
 };
+
+exports.createTrello = (req, res) => {
+  const data = req.body;
+  trello.addTrello(data);
+  res.sendStatus(200);
+}
+
+exports.deleteTrello = (req, res) => {
+  trello.removeTrello(req.params.id, req.query.taskId);
+  res.sendStatus(200);
+}
+
+exports.updateTaskById = (id, data) => {
+    Task.findByIdAndUpdate(id, {$set:data}, (err) => {
+    if (err) return handleError(err);
+    });
+}
 
 exports.getTaskById = function(req, res) {
   Task.findById(req.params.id).exec(function(err, task) {

@@ -14,6 +14,8 @@ router.put("/:id", catchErrors(tasks.updateTask));
 router.post("/export", tasks.dumpTasks);
 router.post("/projecttasklist/:id", tasks.dumpProjectsTaskList);
 router.post("/", catchErrors(tasks.createTask));
+router.post("/trello", tasks.createTrello);
+router.delete("/trello/:id", tasks.deleteTrello);
 router.post("/test", tasks.test);
 
 module.exports = router;

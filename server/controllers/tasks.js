@@ -15,12 +15,8 @@ const { printToCSV } = require("../reports/reports");
 const uploaded = config.uploaded;
 
 exports.getTasks = function(req, res) {
-  const status = req.params.status;
-  // const capa = req.params.capa || 1;
-  const capa = 1;
 
-
-  const tasks = Task.find({ TKStat: {$gt: capa, $lte: status} })
+  const tasks = Task.find({ dateclosed: null })
     .select({
       SourceId: 1,
       TKName: 1,
@@ -28,7 +24,8 @@ exports.getTasks = function(req, res) {
       TKStart: 1,
       TKChamp: 1,
       TKStat: 1,
-      TKCapa: 1
+      TKCapa: 1,
+      TKpcent: 1
     })
     .sort({ TKTarg: 1 });
 
@@ -131,6 +128,11 @@ exports.createTask = async (req, res) => {
 exports.createTrello = (req, res) => {
   const data = req.body;
   trello.addTrello(data);
+  res.sendStatus(200);
+}
+
+exports.editTrello = (req, res) => {
+  trello.updateTrelloCard(req.body);
   res.sendStatus(200);
 }
 

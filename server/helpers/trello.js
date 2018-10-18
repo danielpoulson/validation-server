@@ -4,36 +4,6 @@ const config = require("../config/config")
 const api = config.trello.API_KEY;
 const token = config.trello.TOKEN;
 
-// const labels = [ 
-//   { id: '5a09fbf7652e5bd23c9835a0',
-//     idBoard: '5a09fb675e9f0abca157711f',
-//     name: 'High',
-//     color: 'red' },
-//   { id: '5a09fd09e6d9ddbf48e3ae6b',
-//     idBoard: '5a09fb675e9f0abca157711f',
-//     name: 'Easy',
-//     color: 'green' },
-//   { id: '5a09fb679ae3d60b0cbdf472',
-//     idBoard: '5a09fb675e9f0abca157711f',
-//     name: 'Val',
-//     color: 'blue' },
-//   { id: '5a09fb679ae3d60b0cbdf470',
-//     idBoard: '5a09fb675e9f0abca157711f',
-//     name: 'Med',
-//     color: 'orange' },
-//   { id: '5a29aa994406ca75b529e05d',
-//     idBoard: '5a09fb675e9f0abca157711f',
-//     name: 'Complex',
-//     color: 'red' },
-//   { id: '5a29aa67cec4e036574b19e6',
-//     idBoard: '5a09fb675e9f0abca157711f',
-//     name: 'Low',
-//     color: 'green' },
-//   { id: '5a09fb679ae3d60b0cbdf46f',
-//     idBoard: '5a09fb675e9f0abca157711f',
-//     name: 'Moderate',
-//     color: 'orange' } 
-// ];
 
 function formatLabels(status) {
   let _status = "5a09fb679ae3d60b0cbdf46f";
@@ -71,7 +41,7 @@ exports.addTrello = function(task) {
     method: "POST",
     url: `https://api.trello.com/1/cards?key=${api}&token=${token}`,
     qs: {
-      name: task.name,
+      name: `${task.projId} - ${task.name}`,
       pos: "top",
       due: task.due,
       desc: task.desc,
@@ -97,7 +67,7 @@ exports.updateTrelloCard = (task) => {
     method: "PUT",
     url: `https://api.trello.com/1/cards/${task.trelloId}?key=${api}&token=${token}`,
     qs: {
-      name: task.name,
+      name: `${task.projId} - ${task.name}`,
       due: task.due,
       desc: task.desc,
       idLabels: formatLabels(task.status)

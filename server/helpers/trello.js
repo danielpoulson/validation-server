@@ -4,6 +4,12 @@ const config = require("../config/config")
 const api = config.trello.API_KEY;
 const token = config.trello.TOKEN;
 
+// *****************This is the Boards Section*********************
+// [ { id: '5a09fb675e9f0abca1577120', name: 'To Do' },
+//   { id: '5a1341cc79e59563488771de', name: 'Waiting' },
+//   { id: '5a09fb675e9f0abca1577121', name: 'Doing' },
+//   { id: '5a09fb675e9f0abca1577122', name: 'Done' },
+//   { id: '5a271490bd09e8920689f86e', name: 'On-hold' } ]
 
 function formatLabels(status) {
   let _status = "5a09fb679ae3d60b0cbdf46f";
@@ -70,7 +76,9 @@ exports.updateTrelloCard = (task) => {
       name: `${task.projId} - ${task.name}`,
       due: task.due,
       desc: task.desc,
-      idLabels: formatLabels(task.status)
+      idLabels: formatLabels(task.status),
+      idList: task.stage === "edit" ? "5a09fb675e9f0abca1577120" : "5a09fb675e9f0abca1577122",
+      dueComplete: task.stage === "close" 
     }
   };
 

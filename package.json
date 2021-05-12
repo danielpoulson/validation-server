@@ -33,7 +33,7 @@
     "mongoose-to-csv": "^0.1.1",
     "morgan": "^1.9.1",
     "multer": "^1.3.0",
-    "nodemailer": "^4.6.0",
+    "nodemailer": "^6.4.16",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pug": "^2.0.4",
